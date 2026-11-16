@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuiz Interaktif Sejarah Tingkatan 3 | Bab 1–3</title>
+<style>
+:root{--navy:#172554;--blue:#2563eb;--purple:#7c3aed;--green:#15803d;--red:#b91c1c;--bg:#f3f6fc;--card:#fff;--muted:#64748b}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#172033}
+header{background:linear-gradient(120deg,#172554,#5b21b6);color:white;padding:28px 18px;text-align:center}
+header h1{margin:0 0 8px;font-size:clamp(22px,4vw,34px)}header p{margin:0;color:#e0e7ff}
+main{max-width:850px;margin:22px auto;padding:0 14px}
+.panel{background:var(--card);border-radius:18px;padding:22px;box-shadow:0 8px 26px #17255412;margin-bottom:16px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tabs button{flex:1;min-width:120px}
+button{border:0;border-radius:11px;padding:12px 16px;font-weight:700;cursor:pointer;font-size:15px;background:#e2e8f0;color:#172033}
+button:disabled{opacity:.55;cursor:not-allowed}.tabs button.active,.primary{background:var(--blue);color:white}.primary{width:100%;margin-top:16px}.secondary{background:#ede9fe;color:#5b21b6}
+.meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:14px;margin:12px 0}
+.track{height:9px;background:#e2e8f0;border-radius:20px;overflow:hidden}.bar{height:100%;background:#16a34a;width:0;transition:width .2s}
+h2{font-size:21px;line-height:1.4;margin:20px 0}
+.option{display:flex;gap:12px;align-items:flex-start;border:1.5px solid #dbe3ef;padding:14px;border-radius:12px;margin:9px 0;cursor:pointer}
+.option:hover{border-color:#93c5fd;background:#f8fbff}.option input{margin-top:3px;accent-color:#2563eb}.option.correct{border-color:#16a34a;background:#f0fdf4}.option.wrong{border-color:#dc2626;background:#fef2f2}
+.feedback{padding:16px;border-radius:13px;margin-top:16px;line-height:1.55}.feedback.good{background:#f0fdf4;border:1px solid #86efac}.feedback.bad{background:#fff7ed;border:1px solid #fdba74}
+.hidden{display:none}.score{text-align:center;padding:25px}.score strong{display:block;font-size:48px;color:var(--blue);margin:10px}
+.small{font-size:13px;color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+@media(max-width:520px){.panel{padding:17px}.meta{font-size:12px}button{padding:11px}}
+</style>
+</head>
+<body>
+<header><h1>Kuiz Interaktif Sejarah Tingkatan 3</h1><p>Bab 1 hingga Bab 3 • 20 soalan setiap bab • Jawapan dan penerangan serta-merta</p></header>
+<main>
+<section class="panel">
+ <div class="tabs" id="tabs">
+  <button class="active" data-bab="0">Bab 1</button><button data-bab="1">Bab 2</button><button data-bab="2">Bab 3</button>
+ </div>
+ <div id="quiz">
+  <div class="meta"><span id="babTitle"></span><span id="scoreNow">Markah: 0/20</span></div>
+  <div class="track"><div class="bar" id="progress"></div></div>
+  <div class="meta"><span id="number">Soalan 1 daripada 20</span><span id="percent">0% selesai</span></div>
+  <h2 id="question"></h2>
+  <div id="options"></div>
+  <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+  <button class="primary" id="next" disabled>Semak jawapan</button>
+ </div>
+ <div id="result" class="score hidden">
+  <h2>Kuiz selesai!</h2><strong id="finalScore">0/20</strong><p id="remark"></p><p id="finalPercent"></p>
+  <button class="primary" id="retry">Cuba semula bab ini</button>
+ </div>
+</section>
+<p class="small">Pilih satu jawapan bagi setiap soalan. Tekan “Semak jawapan” untuk melihat jawapan yang betul dan sebabnya. Markah hanya diberikan untuk jawapan yang betul.</p>
+</main>
+<footer>Bahan intervensi Sejarah Tingkatan 3 • Berdasarkan buku teks Bab 1–3 yang dimuat naik</footer>
+<script>
+const quizzes = [
+{title:"Bab 1 — Kedatangan Kuasa Barat", questions:[
+["Apakah faktor utama yang menarik kedatangan kuasa Barat ke negara kita?",["Kekayaan hasil bumi dan kestabilan negara","Jumlah penduduk yang ramai","Sistem pendidikan moden","Kekuatan ketenteraan tempatan"],0,"Kestabilan politik dan kemakmuran ekonomi menarik kuasa Barat untuk menguasai perdagangan serta sumber hasil bumi."],
+["Apakah sistem pemerintahan yang diamalkan masyarakat Melayu sebelum kedatangan Barat?",["Sistem demokrasi","Sistem pemerintahan beraja","Sistem republik","Sistem komunis"],1,"Masyarakat Melayu mengamalkan sistem pemerintahan beraja yang melibatkan Sultan, pembesar dan penghulu."],
+["Siapakah ketua tertinggi dalam sistem pemerintahan beraja?",["Penghulu","Pembesar daerah","Sultan","Ketua kampung"],2,"Sultan ialah pemerintah tertinggi negeri dan mempunyai kuasa dalam pentadbiran."],
+["Apakah peranan utama pembesar dalam sistem pemerintahan Melayu?",["Mengurus perdagangan antarabangsa sahaja","Menjaga keamanan dan mentadbir jajahan","Menjadi ketua agama sahaja","Mengurus pendidikan Barat"],1,"Pembesar membantu Sultan mentadbir jajahan atau daerah, menjaga keamanan dan melaksanakan arahan pemerintah."],
+["Apakah unit pentadbiran paling kecil dalam sistem pemerintahan masyarakat Melayu?",["Negeri","Daerah","Mukim","Kampung"],3,"Kampung ialah unit paling kecil dalam sistem pemerintahan masyarakat Melayu."],
+["Antara berikut, yang manakah hasil galian utama negara kita?",["Bijih timah dan emas","Uranium dan berlian","Batu marmar dan garam","Arang batu dan sulfur"],0,"Bijih timah dan emas merupakan hasil galian penting yang menarik minat pedagang dan kuasa Barat."],
+["Di manakah kegiatan mendulang bijih timah banyak dilakukan secara tradisional?",["Kawasan gurun","Kawasan sungai","Kawasan laut dalam","Kawasan paya bakau sahaja"],1,"Mendulang bijih timah dilakukan di kawasan sungai yang mempunyai mendapan bijih timah."],
+["Antara berikut, yang manakah hasil hutan yang diperdagangkan?",["Plastik dan getah sintetik","Kayu-kayan dan rotan","Bahan kimia buatan","Petrol dan diesel"],1,"Kayu-kayan, rotan dan damar ialah antara hasil hutan yang dimanfaatkan serta diperdagangkan."],
+["Apakah fungsi mata wang dalam sistem ekonomi masyarakat Melayu?",["Menggantikan sistem pemerintahan","Memudahkan urusan perdagangan","Menghapuskan pertanian","Mengawal pendidikan"],1,"Penggunaan mata wang memudahkan urusan jual beli dan perdagangan."],
+["Antara berikut, yang manakah sistem sukatan/timbangan tradisional?",["Meter dan kilometer","Tahil, kati dan pikul","Liter dan gelen sahaja","Sentimeter dan gram"],1,"Masyarakat Melayu menggunakan sukatan dan timbangan seperti tahil, kati dan pikul."],
+["Apakah tujuan pendidikan tidak formal dalam masyarakat Melayu?",["Melahirkan pegawai British","Mewariskan kemahiran dan nilai kehidupan","Menyediakan pelajar ke universiti","Mengajar bahasa Inggeris sahaja"],1,"Pendidikan tidak formal menyampaikan kemahiran, adat, nilai dan pengetahuan melalui keluarga serta masyarakat."],
+["Yang manakah contoh pendidikan tidak formal?",["Madrasah","Sekolah Inggeris","Belajar menganyam dan bertukang","Universiti"],2,"Kemahiran seperti menganyam dan bertukang diwariskan melalui pengalaman dan tunjuk ajar."],
+["Di manakah pendidikan formal masyarakat Melayu berteraskan Islam dilaksanakan?",["Kilang","Masjid, surau, pondok dan madrasah","Pelabuhan","Pejabat kerajaan"],1,"Institusi tersebut menjadi tempat mempelajari al-Quran, hadis, bahasa Arab dan ilmu agama."],
+["Apakah faktor kedatangan kuasa Barat pada abad ke-16?",["Mencari bahan mentah untuk industri moden","Mendapatkan barang mewah seperti rempah-ratus","Membina sekolah","Menyebarkan demokrasi"],1,"Kuasa Barat berminat mendapatkan barang mewah seperti rempah-ratus, teh, sutera dan tembikar."],
+["Apakah syarikat perdagangan Inggeris yang ditubuhkan pada tahun 1600?",["Syarikat Hindia Timur Inggeris","Syarikat Hindia Barat","Syarikat Perdagangan Portugis","Syarikat Hindia Timur Perancis"],0,"Syarikat Hindia Timur Inggeris ditubuhkan pada tahun 1600 dan diberikan monopoli perdagangan."],
+["Apakah kepentingan pelabuhan persinggahan kepada kuasa Barat?",["Tempat membina sekolah","Tempat mendapatkan bekalan dan membaiki kapal","Tempat pilihan raya","Tempat menyimpan senjata sahaja"],1,"Pelabuhan persinggahan menyediakan bekalan air, makanan dan kemudahan membaiki kapal."],
+["Apakah kesan Revolusi Perindustrian terhadap kedatangan kuasa Barat?",["Mengurangkan permintaan bahan mentah","Meningkatkan keperluan bahan mentah dan pasaran","Menghapuskan perdagangan","Menghentikan perkapalan"],1,"Perkembangan kilang meningkatkan permintaan bahan mentah dan pasaran baharu."],
+["Apakah kepentingan pembukaan Terusan Suez pada tahun 1869?",["Memendekkan perjalanan perdagangan Eropah-Asia","Menghapuskan pelabuhan Asia","Meningkatkan pertanian","Menghubungkan Eropah dengan Amerika sahaja"],0,"Terusan Suez menghubungkan Laut Mediterranean dengan Laut Merah dan memendekkan laluan perdagangan."],
+["Apakah slogan yang digunakan kuasa Barat untuk menyebarkan pengaruh mereka?",["Asia untuk Asia","Beban Orang Putih","Merdeka atau Mati","Bersatu Teguh"],1,"Slogan Beban Orang Putih digunakan untuk menggambarkan penjajahan sebagai usaha menyebarkan tamadun."],
+["Antara berikut, yang manakah strategi British untuk menguasai negara kita?",["Manipulasi, ugutan, perjanjian dan pakatan","Pilihan raya sahaja","Pendidikan sahaja","Perdagangan bebas tanpa campur tangan"],0,"British menggunakan manipulasi, ugutan/desakan, tipu helah, perjanjian, pakatan, pajakan dan serangan fizikal."]
+]},
+{title:"Bab 2 — Pentadbiran Negeri-negeri Selat", questions:[
+["Apakah tiga wilayah yang digabungkan untuk membentuk Negeri-negeri Selat pada tahun 1826?",["Perak, Selangor dan Pahang","Pulau Pinang, Singapura dan Melaka","Johor, Kedah dan Kelantan","Sabah, Sarawak dan Brunei"],1,"Negeri-negeri Selat dibentuk pada tahun 1826 melalui gabungan Pulau Pinang, Singapura dan Melaka."],
+["Mengapakah British berminat menguasai Pulau Pinang?",["Kawasan pertanian utama","Kedudukan strategik dalam perdagangan","Kawasan emas terbesar","Pusat pendidikan Islam"],1,"Pulau Pinang terletak pada laluan perdagangan strategik antara India dengan China."],
+["Siapakah Sultan Kedah ketika Francis Light berunding untuk mendapatkan Pulau Pinang?",["Sultan Abdullah Mukarram Shah","Sultan Muhammad Jiwa","Sultan Hussein","Sultan Mahmud Shah III"],0,"Sultan Abdullah Mukarram Shah ialah pemerintah Kedah ketika peristiwa pengambilan Pulau Pinang."],
+["Pada tahun berapakah Francis Light menduduki Pulau Pinang?",["1759","1786","1791","1800"],1,"Francis Light menduduki Pulau Pinang pada tahun 1786."],
+["Apakah nama Pulau Pinang selepas diduduki oleh Francis Light?",["George Town","Prince of Wales Island","Victoria Island","Straits Island"],1,"Pulau Pinang dinamakan Prince of Wales Island oleh British."],
+["Apakah tindakan Sultan Abdullah selepas menyedari muslihat Francis Light?",["Menyerahkan Kedah kepada British","Mengumpulkan angkatan perang untuk menyerang Pulau Pinang","Memindahkan ibu negeri ke Singapura","Menandatangani Perjanjian London"],1,"Sultan Abdullah mengumpulkan angkatan perang untuk mengambil semula Pulau Pinang, namun serangan tersebut gagal."],
+["Apakah perjanjian yang ditandatangani pada tahun 1791 antara Kedah dengan British?",["Perjanjian Pangkor","Perjanjian Persahabatan British-Kedah","Perjanjian London","Perjanjian Inggeris-Belanda"],1,"Perjanjian Persahabatan British-Kedah pada tahun 1791 mengiktiraf pendudukan British di Pulau Pinang."],
+["Mengapakah British memerlukan Singapura?",["Menguasai perdagangan di Selat Melaka dan Selat Sunda","Mendapat kawasan pertanian sahaja","Membina lombong emas","Menggantikan India"],0,"Kedudukan Singapura yang strategik membolehkan British bersaing dengan Belanda dan mengawal laluan perdagangan."],
+["Siapakah pegawai British yang memainkan peranan penting dalam pembukaan Singapura?",["Francis Light","Stamford Raffles","James Brooke","Andrew Clarke"],1,"Stamford Raffles memainkan peranan penting dalam usaha British menguasai Singapura."],
+["Bilakah perjanjian awal Stamford Raffles dengan Temenggung Abdul Rahman ditandatangani?",["6 Februari 1819","17 Mac 1824","2 Ogos 1824","1 April 1867"],0,"Perjanjian 6 Februari 1819 melibatkan Stamford Raffles, Sultan Hussein dan Temenggung Abdul Rahman."],
+["Apakah kesan Perjanjian 6 Februari 1819?",["British meninggalkan Singapura","British menduduki Singapura dan membina petempatan","Singapura diserahkan kepada Belanda","Johor menjadi tanah jajahan Belanda"],1,"Perjanjian tersebut membolehkan British menduduki Singapura dan membina petempatan perdagangan."],
+["Apakah perjanjian yang membahagikan kawasan pengaruh British dan Belanda?",["Perjanjian Pangkor 1874","Perjanjian London 1824","Perjanjian Bangkok 1909","Perjanjian Persahabatan 1791"],1,"Perjanjian London 1824 membahagikan Alam Melayu kepada lingkungan pengaruh British dan Belanda."],
+["Apakah kesan Perjanjian London 1824 terhadap Melaka?",["Melaka dikuasai Belanda","Melaka diserahkan kepada British","Melaka menjadi negeri bebas","Melaka diserahkan kepada Siam"],1,"Belanda menyerahkan Melaka kepada British sebagai pertukaran dengan Bengkulu."],
+["Apakah kesan Perjanjian London 1824 terhadap Singapura?",["Singapura menjadi milik Belanda","Singapura diserahkan kepada British","Singapura menjadi sebahagian Siam","Singapura merdeka"],1,"Perjanjian tersebut mengiktiraf penguasaan British terhadap Singapura."],
+["Apakah kesan Perjanjian London 1824 terhadap Kesultanan Johor Riau?",["Kesultanan semakin kuat","Kesultanan Johor Riau berpecah","Kesultanan menguasai seluruh Alam Melayu","Kesultanan berpindah ke Kedah"],1,"Kesultanan Johor Riau terpecah kepada lingkungan pengaruh British dan Belanda."],
+["Siapakah Sultan Johor yang terlibat dalam perjanjian penyerahan Singapura kepada British?",["Sultan Abdullah Mukarram Shah","Sultan Hussein Muhammad Shah","Sultan Abu Bakar","Sultan Muhammad Jiwa"],1,"Sultan Hussein Muhammad Shah terlibat dalam perjanjian yang mengukuhkan kedudukan British di Singapura."],
+["Negeri manakah yang membentuk Negeri-negeri Selat pada tahun 1826?",["Pulau Pinang, Singapura dan Melaka","Melaka, Perak dan Selangor","Singapura, Johor dan Pahang","Pulau Pinang, Kedah dan Perlis"],0,"Ketiga-tiga wilayah tersebut digabungkan bagi memudahkan pentadbiran British."],
+["Di bawah pentadbiran manakah Negeri-negeri Selat diletakkan pada peringkat awal?",["Pejabat Tanah Jajahan London","Syarikat Hindia Timur Inggeris","Kerajaan Siam","Kerajaan Belanda"],1,"Pada tahun 1826 hingga 1867, Negeri-negeri Selat diletakkan di bawah Syarikat Hindia Timur Inggeris di India."],
+["Bilakah pentadbiran Negeri-negeri Selat dipindahkan ke Pejabat Tanah Jajahan di London?",["1826","1842","1867","1946"],2,"Pada 1 April 1867, Negeri-negeri Selat menjadi tanah jajahan British dan ditadbir oleh Pejabat Tanah Jajahan di London."],
+["Siapakah pegawai yang mengetuai pentadbiran Negeri-negeri Selat selepas tahun 1867?",["Sultan","Residen Konsular","Gabenor","Penghulu"],2,"Gabenor mengetuai pentadbiran Negeri-negeri Selat dan dibantu oleh Residen Konsular di setiap wilayah."]
+]},
+{title:"Bab 3 — Pentadbiran Negeri-negeri Melayu Bersekutu", questions:[
+["Apakah empat buah negeri yang membentuk Negeri-negeri Melayu Bersekutu?",["Perak, Selangor, Negeri Sembilan dan Pahang","Perak, Johor, Kedah dan Pahang","Selangor, Melaka, Johor dan Perlis","Perak, Pulau Pinang, Melaka dan Pahang"],0,"Negeri-negeri Melayu Bersekutu (NNMB) menggabungkan Perak, Selangor, Negeri Sembilan dan Pahang."],
+["Apakah hasil bumi utama yang menarik minat British di Perak, Selangor, Negeri Sembilan dan Pahang?",["Petroleum dan arang batu","Bijih timah dan emas","Bauksit dan gas asli","Berlian dan uranium"],1,"Negeri-negeri tersebut kaya dengan bijih timah dan emas, yang menjadi tarikan kepada kuasa British."],
+["Apakah kaedah tradisional melombong bijih timah pada peringkat awal?",["Menggunakan jentera elektrik","Mendulang dan melampan","Menggunakan kapal korek","Menggunakan bahan letupan"],1,"Pada peringkat awal, bijih timah dilombong secara tradisional melalui kaedah mendulang dan melampan."],
+["Mengapakah Perak menjadi tumpuan perdagangan bijih timah sejak abad ke-15?",["Kedudukannya jauh dari sungai","Kekayaan sumber bijih timah","Tidak mempunyai penduduk","Menjadi pusat pentadbiran British"],1,"Perak mempunyai sumber bijih timah yang banyak, khususnya di kawasan sekitar Sungai Perak dan Sungai Kinta."],
+["Apakah kawasan perlombongan bijih timah yang terkenal di Perak pada abad ke-19?",["Lembah Kinta dan Larut","Kuala Terengganu dan Besut","Kota Bharu dan Pasir Mas","Muar dan Batu Pahat"],0,"Larut dan Lembah Kinta merupakan kawasan perlombongan bijih timah penting di Perak."],
+["Siapakah tokoh yang dikaitkan dengan perkembangan perlombongan bijih timah di Larut?",["Ngah Ibrahim","Stamford Raffles","Francis Light","James Brooke"],0,"Ngah Ibrahim ialah Menteri Larut dan terlibat dalam perkembangan perlombongan bijih timah di Larut."],
+["Apakah nama bandar yang berkembang sebagai pusat pengumpulan bijih timah di Larut?",["Taiping","Kuantan","Muar","Seremban"],0,"Taiping berkembang sebagai bandar penting hasil kegiatan perlombongan bijih timah di Larut."],
+["Apakah kawasan perlombongan bijih timah yang berkembang di Selangor?",["Kuala Selangor sahaja","Kuala Lumpur dan kawasan Lembah Klang","Kuala Lipis sahaja","Pekan sahaja"],1,"Kawasan Kuala Lumpur dan Lembah Klang berkembang pesat akibat kegiatan perlombongan bijih timah."],
+["Siapakah tokoh yang dikaitkan dengan pembukaan dan perkembangan Kuala Lumpur?",["Yap Ah Loy","Dato' Bahaman","Tok Janggut","Rentap"],0,"Yap Ah Loy memainkan peranan penting dalam pembangunan Kuala Lumpur sebagai pusat perdagangan bijih timah."],
+["Apakah sumber kekayaan utama Pahang selain bijih timah?",["Emas","Getah sahaja","Arang batu","Garam"],0,"Pahang terkenal dengan kekayaan emas, khususnya di kawasan Hulu Pahang."],
+["Apakah faktor yang mendorong British meluaskan kuasa di negeri-negeri Melayu?",["Keperluan bahan mentah dan kepentingan ekonomi","Keinginan menyebarkan sukan","Kekurangan kawasan pantai di Britain","Persaingan pendidikan"],0,"Perkembangan perindustrian meningkatkan permintaan bahan mentah dan mendorong British menguasai kawasan ekonomi."],
+["Apakah maksud manipulasi dalam strategi peluasan kuasa British?",["Menggunakan kekuatan tentera sahaja","Menggunakan konflik atau perselisihan untuk campur tangan","Memberi kemerdekaan","Menamatkan perdagangan"],1,"British mengambil kesempatan daripada konflik dalaman untuk meluaskan pengaruh dan campur tangan."],
+["Apakah peristiwa di Perak yang membuka peluang kepada British untuk campur tangan?",["Perang Larut dan perebutan takhta Kesultanan Perak","Perang Naning","Perang Klang sahaja","Perang Pahang"],0,"Perselisihan kongsi gelap dalam Perang Larut serta perebutan takhta Perak memberi peluang kepada British untuk campur tangan."],
+["Apakah perjanjian yang mengukuhkan kuasa British di Perak pada tahun 1874?",["Perjanjian London","Perjanjian Pangkor","Perjanjian Inggeris-Belanda","Perjanjian Bangkok"],1,"Perjanjian Pangkor 1874 membuka jalan kepada penguasaan British secara langsung dalam pentadbiran Perak."],
+["Siapakah yang diiktiraf sebagai Sultan Perak melalui Perjanjian Pangkor 1874?",["Raja Abdullah","Raja Ismail","Raja Yusuf","Raja Muda"],0,"Perjanjian Pangkor mengiktiraf Raja Abdullah sebagai Sultan Perak."],
+["Apakah jawatan British yang diperkenalkan di Perak melalui Perjanjian Pangkor?",["Gabenor","Residen","Pesuruhjaya Tinggi","Yang Dipertua"],1,"Perjanjian Pangkor menetapkan pelantikan seorang Residen British yang nasihatnya mesti diminta dan dipatuhi kecuali berkaitan agama Islam dan adat Melayu."],
+["Apakah peristiwa yang digunakan British sebagai alasan untuk mendesak Selangor menerima perlindungan British?",["Rom­pakan kapal dagang British dan serangan di Tanjung Rachado","Perang Naning","Perebutan takhta Pahang","Pembukaan Terusan Suez"],0,"British menggunakan peristiwa rompakan kapal dagang dan serangan rumah api di Tanjung Rachado sebagai alasan untuk mendesak campur tangan."],
+["Apakah strategi British di Sungai Ujong, Negeri Sembilan?",["Menyokong pihak yang memberi kepentingan kepada British dalam persaingan kuasa","Menghapuskan semua pembesar","Menyerahkan negeri kepada Belanda","Menghentikan kutipan cukai"],0,"British campur tangan dalam persaingan pembesar di Sungai Ujong untuk menguasai laluan dan hasil cukai."],
+["Apakah tujuan utama pelaksanaan Sistem Residen?",["Menghapuskan semua institusi tempatan","Membolehkan British mengawal pentadbiran secara tidak langsung","Memberikan kemerdekaan penuh","Mengembalikan kuasa mutlak kepada pembesar"],1,"Sistem Residen membolehkan British mengawal pentadbiran negeri melalui nasihat Residen yang perlu dipatuhi oleh pemerintah."],
+["Apakah pengecualian utama dalam nasihat Residen British?",["Perdagangan dan perlombongan","Agama Islam dan adat Melayu","Pendidikan dan kesihatan","Pertahanan dan hubungan luar"],1,"Dalam pelaksanaan Sistem Residen, nasihat Residen perlu dipatuhi kecuali perkara berkaitan agama Islam dan adat Melayu."]
+]}
+];
+
+let bab=0, index=0, selected=null, score=0, answered=false;
+const $=id=>document.getElementById(id);
+function render(){
+ const q=quizzes[bab].questions[index];
+ $("babTitle").textContent=quizzes[bab].title;
+ $("scoreNow").textContent=`Markah: ${score}/20`;
+ $("number").textContent=`Soalan ${index+1} daripada 20`;
+ $("percent").textContent=`${Math.round(index/20*100)}% selesai`;
+ $("progress").style.width=`${index/20*100}%`;
+ $("question").textContent=q[0];
+ $("options").innerHTML="";
+ q[1].forEach((v,i)=>{
+  const label=document.createElement("label");label.className="option";
+  label.innerHTML=`<input type="radio" name="answer" value="${i}"><span><b>${"ABCD"[i]}.</b> ${v}</span>`;
+  label.addEventListener("click",()=>{if(answered)return;selected=i;$("next").disabled=false;});
+  $("options").appendChild(label);
+ });
+ $("feedback").className="feedback hidden";$("feedback").textContent="";
+ $("next").textContent="Semak jawapan";$("next").disabled=true;selected=null;answered=false;
+ $("quiz").classList.remove("hidden");$("result").classList.add("hidden");
+ document.querySelectorAll(".tabs button").forEach((b,i)=>b.classList.toggle("active",i===bab));
+}
+function check(){
+ const q=quizzes[bab].questions[index];
+ if(!answered){
+  if(selected===null)return;
+  answered=true;
+  const correct=selected===q[2];if(correct)score++;
+  [...$("options").children].forEach((el,i)=>{
+   el.querySelector("input").disabled=true;
+   if(i===q[2])el.classList.add("correct");
+   else if(i===selected)el.classList.add("wrong");
+  });
+  $("scoreNow").textContent=`Markah: ${score}/20`;
+  $("progress").style.width=`${(index+1)/20*100}%`;
+  const f=$("feedback");f.className=`feedback ${correct?"good":"bad"}`;
+  f.innerHTML=`<b>${correct?"Betul! Syabas.":"Belum tepat. Mari fahami jawapan."}</b><br><b>Jawapan betul: ${"ABCD"[q[2]]}. ${q[1][q[2]]}</b><br><br><b>Mengapa?</b><br>${q[3]}`;
+  $("next").textContent=index===19?"Lihat keputusan":"Soalan seterusnya";
+ }else{
+  if(index<19){index++;render();}
+  else showResult();
+ }
+}
+function showResult(){
+ $("quiz").classList.add("hidden");$("result").classList.remove("hidden");
+ $("finalScore").textContent=`${score} / 20`;
+ $("finalPercent").textContent=`Peratus: ${score*5}%`;
+ $("remark").textContent=score>=18?"Cemerlang! Teruskan usaha.":score>=15?"Sangat baik!":score>=10?"Baik. Ulang kaji fakta yang masih kurang dikuasai.":"Teruskan berusaha. Cuba semula selepas ulang kaji.";
+ $("progress").style.width="100%";
+}
+$("next").addEventListener("click",check);
+$("retry").addEventListener("click",()=>{index=0;score=0;render();});
+document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{bab=Number(b.dataset.bab);index=0;score=0;render();}));
+render();
+</script>
+</body>
+</html>
